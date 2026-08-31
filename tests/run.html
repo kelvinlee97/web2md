@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Web2MD 核心测试</title>
+<style>
+  body { font: 14px/1.6 -apple-system, "Segoe UI", "PingFang SC", sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; }
+  h1.good { color: #1a7f37; } h1.bad { color: #d1242f; }
+  ul { list-style: none; padding: 0; }
+  li.pass::before { content: "✓ "; color: #1a7f37; }
+  li.fail::before { content: "✗ "; color: #d1242f; }
+  li.fail { font-weight: 600; }
+</style>
+</head>
+<body>
+<h1>运行中…</h1>
+<ul id="results"></ul>
+<script src="../core/extract.js"></script>
+<script src="../core/serialize.js"></script>
+<script src="../core/article.js"></script>
+<script src="../core/integrity.js"></script>
+<script src="fixture.js"></script>
+<script src="run.js"></script>
+</body>
+</html>

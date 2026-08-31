@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Web2MD 结果</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<header>
+  <div class="head-row">
+    <h1 id="page-title"></h1>
+    <span id="scope-chip" class="chip"></span>
+  </div>
+  <div id="page-url"></div>
+  <div id="actions">
+    <button id="copy-btn">复制 Markdown</button>
+    <button id="download-btn">下载 .md</button>
+  </div>
+</header>
+<section id="report" class="report">
+  <div id="summary" class="summary"></div>
+  <div id="missing"></div>
+</section>
+<section id="preview">
+  <div class="tabs">
+    <button id="tab-rendered" class="tab active">渲染预览</button>
+    <button id="tab-raw" class="tab">原文</button>
+  </div>
+  <div id="rendered" class="content"></div>
+  <pre id="raw" class="content hidden"></pre>
+</section>
+<div id="error-box" class="error-box hidden"></div>
+<script src="ui.js"></script>
+</body>
+</html>
