@@ -1,0 +1,55 @@
+# Chrome Web Store 上架文案(复制粘贴用)
+
+## 名称(zh-CN)
+Web2MD — 网页转 Markdown(带完整性报告)
+
+## 简短说明(≤132 字符,zh-CN)
+一键把当前网页转成干净的 Markdown,并如实报告转换是否完整——绝不静默丢内容。免费、本地优先、零依赖。
+
+## 详细说明(zh-CN)
+Web2MD 把当前网页转成 Markdown,可直接复制或下载 .md。与普通转换器不同,
+它自带**完整性报告**:转换前后独立统计标题、段落、列表、链接、图片、表格、
+代码块、文本字符并逐项对比,任何缺失都会红色告警并列出具体缺失项,而不是显示
+"成功"。
+
+- 两种模式:点图标转换文章(自动识别正文范围、优先 <main>),右键菜单可转整页
+- 干净输出:剥除导航/页脚/菜单等外围内容;内联 SVG 不倾倒原始代码,只在报告中说明
+- 完整性报告:任何缺失如实告警,iframe/视频/SVG 等无法用 Markdown 表达的内容以说明列出
+- 结果页:渲染预览 + Markdown 原文双视图,复制 / 下载 .md
+- 本地优先:页面数据不出浏览器,零依赖、零构建、不加载任何远程代码
+
+权限说明(逐项):
+- activeTab:仅在用户点击图标或右键菜单时获取当前标签页访问权,用于转换该页
+- scripting:向当前页注入转换脚本(仅用户触发时)
+- storage:把转换结果暂存于浏览器会话内存(storage.session),打开结果页用,浏览器关闭即清空
+- contextMenus:右键菜单"转换为 Markdown"两个入口
+
+隐私:不收集、不传输、不出售任何数据;没有账号、没有分析、没有远程服务器。
+
+## Detailed description (en)
+Web2MD converts the current page to Markdown with copy / download. Unlike ordinary
+converters, it ships with an **integrity report**: headings, paragraphs, lists, links,
+images, tables, code blocks and text characters are counted independently before and
+after conversion and compared item by item. Any loss triggers a red warning with the
+exact missing items — never a silent "success".
+
+- Two modes: toolbar click converts the article (auto-detected scope, prefers <main>);
+  context menu converts the full page
+- Clean output: nav/footer/menu boilerplate stripped; inline SVG source is not dumped,
+  just noted in the report
+- Local-first: page data never leaves the browser; zero dependencies, zero remote code
+- Result page: rendered preview + raw Markdown, copy / download .md
+
+Permissions: activeTab & scripting — convert the current tab only when you click the
+icon or context menu; storage — session-scoped handoff of the result to the result
+page, cleared when the browser closes; contextMenus — right-click entry points.
+
+Privacy: no data collected, transmitted or sold. No accounts, no analytics, no servers.
+
+## 分类
+生产工具(Productivity)
+
+## 商店隐私表单(勾选/填写)
+- 单一用途:将当前网页转换为 Markdown 供用户复制/下载
+- 数据处理:不收集任何用户数据;权限只用于按用户手势转换当前页
+- 隐私政策 URL: https://github.com/kelvinlee97/web2md/blob/main/PRIVACY.md
