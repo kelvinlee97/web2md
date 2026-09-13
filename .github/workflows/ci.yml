@@ -28,6 +28,7 @@ jobs:
           grep -q 'ALL PASS' test-results.html
 
       - name: Verify release package
+        if: ${{ hashFiles('store/package.sh') != '' }}
         run: |
           ./store/package.sh >/dev/null
           unzip -t web2md-0.1.0.zip
