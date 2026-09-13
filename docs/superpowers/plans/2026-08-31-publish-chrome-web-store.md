@@ -26,7 +26,7 @@
 - Create: `icons/icon16.png` `icons/icon32.png` `icons/icon48.png` `icons/icon128.png`(脚本产物)
 - Modify: `manifest.json` — 加 icons / action.default_icon
 - Create: `store/listing.md` — 商店文案(zh-CN + en)+ 权限说明 + 隐私声明文案,供控制台粘贴
-- Create: `store/screenshot-1.png` `store/screenshot-2.png` — 1280x800 商店截图
+- Create: `store/screenshot-1.png` — 1280x800 商店截图
 - Create: `PRIVACY.md` — 仓库内隐私政策(供商店隐私 URL 引用)
 - Create: `store/package.sh` — 打 zip 包脚本
 - Create: `web2md-0.1.0.zip`(产物,gitignore `*.zip`)
@@ -144,44 +144,30 @@ git commit -m "feat: 商店图标与 manifest icons 键"
 ### Task 2: 商店截图(1280x800)
 
 **Files:**
-- Create: `store/screenshot-1.png`(结果页整体)
-- Create: `store/screenshot-2.png`(原文 Markdown 视图)
+- Create: `store/screenshot-1.png`(原网页与新版结果页对比)
 
 **Interfaces:**
-- Consumes: Playwright MCP 浏览器(本机 http 服务器 + chrome.storage 桩演示法)
-- Produces: 两张 1280x800 PNG,控制台商店上传用
+- Consumes: `docs/preview.png` 新版真实转换对比图
+- Produces: 一张 1280x800 PNG,控制台商店上传用
 
-- [ ] **Step 1: 起本地服务器并打开演示结果页(viewport 1280x800)**
+- [ ] **Step 1: 生成商店尺寸截图**
 
 ```bash
-nohup python3 -m http.server 8742 --bind 127.0.0.1 >/dev/null 2>&1 &
+cp docs/preview.png store/screenshot-1.png
+sips --resampleHeight 800 store/screenshot-1.png
+sips --padToHeightWidth 800 1280 --padColor E8EDF5 store/screenshot-1.png
 ```
-Playwright run_code_unsafe:
-1. `page.goto('https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models', {waitUntil:'load'})`
-2. 内联注入 core 四件套(https 页加载 http 脚本被混合内容拦截,必须 content 注入)
-3. `page.evaluate` 跑管线拿 payload;`page.addInitScript` 注入 chrome.storage 桩
-4. `page.setViewportSize({width:1280, height:800})`
-5. `page.goto('http://127.0.0.1:8742/ui/ui.html?tab=1', {waitUntil:'load'})`
+Expected: 1280x800 PNG,页面含「已检查，未发现转换差异」报告与阅读预览
 
-- [ ] **Step 2: 截第一张(渲染预览视图)**
+- [ ] **Step 2: 校验尺寸**
 
-Playwright: `take_screenshot` 工具保存到 `store/screenshot-1.png`
-Expected: 1280x800 PNG,页面含绿色「完整性:通过」报告与渲染预览
-
-- [ ] **Step 3: 切原文视图截第二张**
-
-Playwright: 点击 `#tab-raw` 后 `take_screenshot` 保存 `store/screenshot-2.png`
-Expected: 显示 Markdown 原文文本
-
-- [ ] **Step 4: 校验尺寸**
-
-Run: `file store/screenshot-1.png store/screenshot-2.png`
+Run: `file store/screenshot-1.png`
 Expected: `PNG image data, 1280 x 800`
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add store/screenshot-1.png store/screenshot-2.png
+git add store/screenshot-1.png
 git commit -m "feat: 商店截图 1280x800"
 ```
 
@@ -217,7 +203,7 @@ Web2MD 把当前网页转成 Markdown,可直接复制或下载 .md。与普通�
 - 两种模式:点图标转换文章(自动识别正文范围、优先 <main>),右键菜单可转整页
 - 干净输出:剥除导航/页脚/菜单等外围内容;内联 SVG 不倾倒原始代码,只在报告中说明
 - 完整性报告:任何缺失如实告警,iframe/视频/SVG 等无法用 Markdown 表达的内容以说明列出
-- 结果页:渲染预览 + Markdown 原文双视图,复制 / 下载 .md
+- 结果页:阅读预览 + Markdown 源码双视图,复制 / 下载 .md
 - 本地优先:页面数据不出浏览器,零依赖、零构建、不加载任何远程代码
 
 权限说明(逐项):
