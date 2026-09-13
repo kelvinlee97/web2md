@@ -166,8 +166,8 @@ function buildReport(pre, md, notes = []) {
   const pass = checks.every((c) => c.ok);
   const failed = checks.filter((c) => !c.ok);
   const summary = pass
-    ? '完整性:通过 — ' + checks.map((c) => c.label + ' ' + c.pre + '/' + c.post).join(',')
-    : '转换不完整 — ' + failed.map((c) => c.label + ' ' + c.pre + '/' + c.post).join(',');
+    ? '已检查，未发现转换差异'
+    : '发现转换差异，请检查：' + failed.map((c) => c.label).join('、');
 
   return { pass, checks, summary, notes };
 }

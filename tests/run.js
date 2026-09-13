@@ -22,6 +22,7 @@ assert('figures 1', article.pre.figures.length === 1);
 assert('tables 1', article.pre.tables.length === 1);
 assert('codeBlocks 1', article.pre.codeBlocks.length === 1);
 assert('report.pass', report.pass === true);
+assert('成功摘要不堆叠计数', report.summary === '已检查，未发现转换差异');
 
 // 2. Full page 模式:nav/footer 计入
 const full = domToMarkdown(container, 'full');
@@ -38,6 +39,7 @@ assert('未回退', det.isFallback === false);
 // 4. 失败路径:截断 md → 必须报不完整且有具体缺失项
 const truncated = buildReport(article.pre, article.md.slice(0, -30), article.notes);
 assert('截断后 pass=false', truncated.pass === false);
+assert('差异摘要列出失败项目', truncated.summary === '发现转换差异，请检查：' + truncated.checks.filter((c) => !c.ok).map((c) => c.label).join('、'));
 assert('截断后有 missing 明细', truncated.checks.some((c) => c.missing.length > 0));
 
 // 5. 确定性(复制 == 预览的核心保证)

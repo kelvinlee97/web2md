@@ -2,34 +2,47 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<title>Web2MD 结果</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Web2MD · 转换结果</title>
 <link rel="stylesheet" href="ui.css">
 </head>
 <body>
 <header>
+  <p class="brand">Web2MD <span>把网页，留下来。</span></p>
   <div class="head-row">
-    <h1 id="page-title"></h1>
+    <h1 id="page-title">正在读取转换结果…</h1>
     <span id="scope-chip" class="chip"></span>
   </div>
   <div id="page-url"></div>
   <div id="actions">
-    <button id="copy-btn">复制 Markdown</button>
-    <button id="download-btn">下载 .md</button>
+    <button id="copy-btn" disabled aria-live="polite">复制 Markdown</button>
+    <button id="download-btn" disabled>下载 .md</button>
   </div>
 </header>
-<section id="report" class="report">
-  <div id="summary" class="summary"></div>
+<main>
+<section id="report" class="report hidden" aria-label="内容检查">
+  <div id="summary" class="summary" role="status"></div>
+  <p class="note">检查已提取内容的转换差异，不代表原网页的所有内容都已收录。</p>
   <div id="missing"></div>
+  <details id="report-details">
+    <summary>查看检查详情</summary>
+    <table class="checks">
+      <caption>转换前后的内容对比</caption>
+      <thead><tr><th scope="col">检查项</th><th scope="col">转换前</th><th scope="col">转换后</th><th scope="col">结果</th></tr></thead>
+      <tbody id="check-rows"></tbody>
+    </table>
+  </details>
 </section>
-<section id="preview">
-  <div class="tabs">
-    <button id="tab-rendered" class="tab active">渲染预览</button>
-    <button id="tab-raw" class="tab">原文</button>
+<section id="preview" class="hidden" aria-label="转换内容">
+  <div class="tabs" role="group" aria-label="预览方式">
+    <button id="tab-rendered" class="tab" aria-pressed="true" aria-controls="rendered">阅读预览</button>
+    <button id="tab-raw" class="tab" aria-pressed="false" aria-controls="raw">Markdown 源码</button>
   </div>
-  <div id="rendered" class="content"></div>
-  <pre id="raw" class="content hidden"></pre>
+  <div id="rendered" class="content" tabindex="0" aria-label="阅读预览"></div>
+  <pre id="raw" class="content hidden" tabindex="0" aria-label="Markdown 源码"></pre>
 </section>
-<div id="error-box" class="error-box hidden"></div>
+<div id="error-box" class="error-box hidden" role="alert"></div>
+</main>
 <script src="ui.js"></script>
 </body>
 </html>
