@@ -5,7 +5,12 @@
 (async () => {
   const tab = new URLSearchParams(location.search).get('tab');
   if (!tab) return showError('缺少标签页参数。');
-  const { ['t' + tab]: payload } = await chrome.storage.session.get('t' + tab);
+  let payload;
+  try {
+    ({ ['t' + tab]: payload } = await chrome.storage.session.get('t' + tab));
+  } catch {
+    return showError('无法读取转换结果，请回到原网页，重新点击扩展图标。');
+  }
   if (!payload) return showError('结果已失效(扩展重载或浏览器重启后清空),请重新点击扩展图标转换。');
   if (payload.error) return showError(payload.error);
   render(payload);
@@ -13,6 +18,9 @@
 
 function showError(msg) {
   const box = document.getElementById('error-box');
+  document.getElementById('page-title').textContent = '暂时无法显示转换结果';
+  document.getElementById('actions').classList.add('hidden');
+  document.getElementById('report').classList.add('hidden');
   box.textContent = msg;
   box.classList.remove('hidden');
   document.getElementById('preview').classList.add('hidden');
@@ -24,20 +32,36 @@ function render({ md, report, meta }) {
   document.getElementById('page-title').textContent = meta.title || '(无标题)';
   document.getElementById('page-url').textContent = meta.url || '';
   const chip = document.getElementById('scope-chip');
-  chip.textContent = meta.mode === 'full'
-    ? '整页' + (meta.fallback ? '(回退)' : '') + (meta.confidence ? ' · 置信度 ' + meta.confidence + '%' : '')
-    : '文章' + (meta.confidence ? ' · 置信度 ' + meta.confidence + '%' : '');
-  chip.classList.add(meta.fallback ? 'chip-warn' : 'chip-ok');
+  chip.textContent = meta.mode === 'full' ? '整页' : '文章正文';
+  if (meta.fallback) {
+    chip.textContent = '未找到明确正文 · 请核对范围';
+    chip.classList.add('chip-warn');
+  }
+  document.title = (meta.title || '转换结果') + ' · Web2MD';
+  document.getElementById('preview').classList.remove('hidden');
 
   const panel = document.getElementById('report');
+  panel.classList.remove('hidden');
   panel.classList.add(report.pass ? 'report-pass' : 'report-fail');
   document.getElementById('summary').textContent = report.summary;
+
+  document.getElementById('report-details').open = !report.pass;
+  const rows = document.getElementById('check-rows');
+  for (const check of report.checks) {
+    const row = document.createElement('tr');
+    for (const value of [check.label, check.pre, check.post, check.ok ? '一致' : '有差异']) {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.appendChild(cell);
+    }
+    rows.appendChild(row);
+  }
 
   const missingBox = document.getElementById('missing');
   for (const c of report.checks.filter((x) => !x.ok)) {
     const h = document.createElement('div');
     h.className = 'check-name';
-    h.textContent = c.label + ' ' + c.pre + '/' + c.post;
+    h.textContent = c.label + '：转换前 ' + c.pre + ' → 转换后 ' + c.post;
     missingBox.appendChild(h);
     const ul = document.createElement('ul');
     for (const m of c.missing) {
@@ -59,6 +83,8 @@ function render({ md, report, meta }) {
   document.getElementById('raw').textContent = md;
 
   const copyBtn = document.getElementById('copy-btn');
+  copyBtn.disabled = false;
+  document.getElementById('download-btn').disabled = false;
   copyBtn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(md);
@@ -67,8 +93,13 @@ function render({ md, report, meta }) {
       ta.value = md;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand('copy');
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch {}
       ta.remove();
+      if (!copied) {
+        copyBtn.textContent = '复制失败，请下载 .md';
+        return;
+      }
     }
     copyBtn.textContent = '已复制 ✓';
     setTimeout(() => { copyBtn.textContent = '复制 Markdown'; }, 2000);
@@ -85,14 +116,14 @@ function render({ md, report, meta }) {
   });
 
   document.getElementById('tab-rendered').addEventListener('click', () => {
-    document.getElementById('tab-rendered').classList.add('active');
-    document.getElementById('tab-raw').classList.remove('active');
+    document.getElementById('tab-rendered').setAttribute('aria-pressed', 'true');
+    document.getElementById('tab-raw').setAttribute('aria-pressed', 'false');
     rendered.classList.remove('hidden');
     document.getElementById('raw').classList.add('hidden');
   });
   document.getElementById('tab-raw').addEventListener('click', () => {
-    document.getElementById('tab-raw').classList.add('active');
-    document.getElementById('tab-rendered').classList.remove('active');
+    document.getElementById('tab-raw').setAttribute('aria-pressed', 'true');
+    document.getElementById('tab-rendered').setAttribute('aria-pressed', 'false');
     document.getElementById('raw').classList.remove('hidden');
     rendered.classList.add('hidden');
   });
