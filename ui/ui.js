@@ -134,12 +134,15 @@ function render({ md, report, meta }) {
 const IMG = /!\[((?:[^\]\\]|\\.)*)\]\(((?:[^()]|\([^()]*\))*)\)/g;
 const LINK = /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))*)\)/g;
 
+// raw 已经过 esc() 转义(&/</>),但属性值还需转义引号,否则可从属性中逃逸注入标签。
+const attrSafe = (s) => s.replace(/"/g, '&quot;');
+
 function inlineHtml(raw) {
   let s = esc(raw);
   s = s.replace(IMG, (m, alt, src) =>
-    /^(https?:|data:image\/)/i.test(src) ? '<img alt="' + alt + '" src="' + src + '">' : m);
+    /^(https?:|data:image\/)/i.test(src) ? '<img alt="' + attrSafe(alt) + '" src="' + attrSafe(src) + '">' : m);
   s = s.replace(LINK, (m, text, url) =>
-    /^(https?:|mailto:|#|\/)/i.test(url) ? '<a href="' + url + '" target="_blank" rel="noreferrer">' + text + '</a>' : m);
+    /^(https?:|mailto:|#|\/)/i.test(url) ? '<a href="' + attrSafe(url) + '" target="_blank" rel="noreferrer">' + text + '</a>' : m);
   s = s.replace(/`([^`]*)`/g, '<code>$1</code>');
   s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
