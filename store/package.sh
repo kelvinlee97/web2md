@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# store/package.sh — 只打运行时文件
+# store/package.sh — packages runtime files only
 cd "$(dirname "$0")/.."
 rm -f web2md-0.1.0.zip
 zip -r web2md-0.1.0.zip \

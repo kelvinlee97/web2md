@@ -1,62 +1,62 @@
 # Web2MD
 
-### 把网页，留下来。
+### Save the web, as Markdown.
 
-一键将网页正文保存为 Markdown，方便整理笔记、收藏文章。转换后检查文本与常见元素，并提示发现的差异和不支持的内容。
+One click turns a page's article into Markdown, ready for your notes or reading list. After conversion, it checks the text and common elements and tells you exactly what — if anything — didn't make it through.
 
-**免费使用 · 本地转换 · 一键复制或下载**
+**Free · Converts locally · Copy or download in one click**
 
-![同一篇演示文章的转换前后对比：左侧是带导航和订阅栏的网页，右侧是 Web2MD 的正文阅读预览、内容检查和复制按钮。](docs/preview.png)
+![Before/after of the same demo article: left is the live page with nav and a subscribe bar, right is Web2MD's reading preview, content check, and copy button.](docs/preview.png)
 
-*使用仓库内的[演示文章](docs/example.html)实际转换后截图。文章模式省去导航和订阅栏，保留正文结构。*
+*Actual screenshot from converting the [demo article](docs/example.html) in this repo. Article mode drops the nav and subscribe bar, keeping the article's structure.*
 
-## 从网页，到你的笔记
+## From page to notes
 
-1. **打开文章，点击扩展图标。** Web2MD 自动寻找正文并转换。
-2. **预览结果，查看内容检查。** 有差异会直接提示，详细计数可展开查看。
-3. **复制 Markdown，或下载 `.md` 文件。** 保存到自己的笔记或资料文件夹。
+1. **Open the article, click the extension icon.** Web2MD finds the article body and converts it automatically.
+2. **Preview the result, check the content report.** Any differences are called out directly; expand for the full counts.
+3. **Copy the Markdown, or download the `.md` file.** Save it to your notes or wherever you keep things.
 
-只想留下文章，用默认的**文章模式**；想包含导航、页脚等内容，右键页面选择**转换整页为 Markdown**。
+Use **Article mode** (the default) when you just want the article. Want the nav, footer, and everything else too? Right-click the page and choose **Convert full page to Markdown**.
 
-## 安装到 Chrome
+## Installing in Chrome
 
-目前通过「加载已解压的扩展程序」安装，无需构建。
+For now this installs as an unpacked extension — no build step required.
 
-1. 在本仓库页面点击 **Code → Download ZIP**，解压到准备长期保留的位置；也可以使用已有的 Git 克隆目录。
-2. 在 Chrome 地址栏输入 `chrome://extensions`，打开右上角的**开发者模式**。
-3. 点击**加载已解压的扩展程序**，选择包含 `manifest.json` 的文件夹。
-4. 在浏览器工具栏的扩展菜单中固定 **Web2MD**，打开一篇网页文章，点击它开始转换。
+1. On this repo's page, click **Code → Download ZIP** and unzip it somewhere you'll keep it (or just use your existing git clone).
+2. In Chrome, go to `chrome://extensions` and turn on **Developer mode** (top right).
+3. Click **Load unpacked** and select the folder containing `manifest.json`.
+4. Pin **Web2MD** from the extensions menu in your toolbar, open an article, and click it to convert.
 
-## 内容检查，具体检查什么？
+## What does the content check actually check?
 
-对已提取的内容与生成的 Markdown 进行对比，包括标题、段落、列表项、链接、图片、图注、代码块、表格数量和规范化文本。
+It compares the content that was extracted against the generated Markdown — headings, paragraphs, list items, links, images, captions, code blocks, table counts, and normalized text.
 
-- **未发现转换差异：** 默认显示简短摘要，展开可查看各项计数。
-- **发现转换差异：** 直接显示相关检查项及可定位的差异，详情自动展开。
-- **不支持的内容：** 在识别到时列出说明，例如 iframe、音视频、canvas 和内联 SVG。
+- **No differences found:** shows a short summary by default; expand to see the counts.
+- **Differences found:** the affected checks are shown directly, with specifics you can trace, and the details expand automatically.
+- **Unsupported content:** noted explicitly when detected — e.g. iframes, audio/video, canvas, and inline SVG.
 
-检查通过不代表原网页全部收录：正文识别可能遗漏区块，尚未加载的内容也无法检查。重要资料建议与原网页对照。
+A passing check doesn't mean the entire original page was captured — article detection can miss sections, and content that hasn't loaded yet can't be checked either. For anything that matters, cross-check against the original page.
 
-## 使用前了解这些边界
+## A few things worth knowing before you use it
 
-- `chrome://` 等浏览器内置页面无法转换。
-- 转换 `file://` 页面，需要在扩展详情页开启**允许访问文件网址**。
-- 请先滚动页面，等待需要的内容和懒加载图片出现。Markdown 保存图片地址，不会将图片打包为离线文件。
-- iframe 内部、canvas、闭合 Shadow DOM、尚未加载或当前无权访问的内容，以及内联 SVG 原始代码不会转换。
-- 阅读预览支持常见 Markdown 结构，复杂格式建议同时查看 **Markdown 源码**。
-- 扩展重载或浏览器重启后，旧结果可能无法再次读取；需要保留时请及时复制或下载。
+- Built-in browser pages (`chrome://` etc.) can't be converted.
+- To convert `file://` pages, enable **Allow access to file URLs** on the extension's details page.
+- Scroll through the page first and let lazy-loaded content and images appear before converting. Markdown keeps image URLs — it doesn't bundle images into an offline file.
+- Content inside iframes, canvas, closed shadow DOM, anything not yet loaded or not currently accessible, and inline SVG source code are not converted.
+- The reading preview supports common Markdown structures; for anything more complex, check the **Markdown source** view too.
+- Old results may become unreadable after the extension reloads or the browser restarts — copy or download promptly if you need to keep them.
 
-## 开发与测试
+## Development and testing
 
-核心逻辑零依赖、零构建；浏览器扩展入口与转换逻辑分离。
+The core logic has zero dependencies and no build step; the extension entry points are kept separate from the conversion logic.
 
-| 位置 | 用途 |
+| Location | Purpose |
 | --- | --- |
-| `core/` | 正文识别、Markdown 转换和内容检查 |
-| `background.js` / `content.js` | 触发转换、读取页面、传递结果 |
-| `ui/` | 阅读预览、检查详情、复制和下载 |
-| `tests/` | 可在浏览器直接运行的核心自检 |
+| `core/` | Article detection, Markdown conversion, and content checks |
+| `background.js` / `content.js` | Trigger conversion, read the page, pass along the result |
+| `ui/` | Reading preview, check details, copy and download |
+| `tests/` | Self-contained core tests that run directly in the browser |
 
-用 Chrome 打开 `tests/run.html`，页面应显示 **ALL PASS**，无需服务器。测试覆盖计数、文章与整页模式、正文识别、截断差异、摘要和序列化确定性。
+Open `tests/run.html` in Chrome — it should show **ALL PASS**, no server needed. Tests cover counts, article vs. full-page mode, article detection, truncation-induced differences, summaries, and serialization determinism.
 
-正文识别优先选择可信的 `<main>`，否则按启发式评分选择容器。文章模式跳过导航、侧栏、页脚等区域；可见的 `aria-hidden` 文本仍保留，以兼容分字动画标题。
+Article detection prefers a trustworthy `<main>` when present, otherwise falls back to heuristic scoring of candidate containers. Article mode skips nav, sidebars, footers, and similar regions; visible `aria-hidden` text is still kept, so letter-by-letter animated headings aren't lost.

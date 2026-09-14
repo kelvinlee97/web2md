@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Web2MD",
   "version": "0.1.0",
-  "description": "把当前网页转成 Markdown,并如实报告转换是否完整。",
+  "description": "Convert the current page to Markdown, and honestly report whether the conversion is complete.",
   "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
   "background": { "service_worker": "background.js" },
   "icons": {

@@ -1,5 +1,6 @@
-// 夹具:覆盖标题/段落/列表(嵌套/checkbox/ol start)/引用/代码/表格/图片/figure 图注/
-// SVG/隐藏内容/外围(nav/footer)的真实 HTML 片段,作为 JS 字符串由 run.html 注入文档。
+// Fixture: a real HTML snippet covering headings/paragraphs/lists (nested/checkbox/ol start)/
+// blockquotes/code/tables/images/figure captions/SVG/hidden content/boilerplate (nav/footer),
+// injected into the document as a JS string by run.html.
 
 const FIXTURE_HTML = `
 <div id="wrap">

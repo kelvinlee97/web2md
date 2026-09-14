@@ -1,24 +1,24 @@
-// 结果页:读 storage.session → 渲染报告/预览 → 复制/下载。
-// 预览的渲染/原文两个视图共用同一个 payload.md 变量,复制 == 预览结构性相等。
-// 本页无内联脚本(满足 MV3 CSP),所有 JS 在外部文件。
+// Result page: read from storage.session → render the report/preview → copy/download.
+// Both preview views (rendered/raw) share the same payload.md, so copy == preview by construction.
+// No inline <script> on this page (required by the MV3 CSP) — all JS lives in external files.
 
 (async () => {
   const tab = new URLSearchParams(location.search).get('tab');
-  if (!tab) return showError('缺少标签页参数。');
+  if (!tab) return showError('Missing tab parameter.');
   let payload;
   try {
     ({ ['t' + tab]: payload } = await chrome.storage.session.get('t' + tab));
   } catch {
-    return showError('无法读取转换结果，请回到原网页，重新点击扩展图标。');
+    return showError('Could not read the conversion result. Go back to the page and click the extension icon again.');
   }
-  if (!payload) return showError('结果已失效(扩展重载或浏览器重启后清空),请重新点击扩展图标转换。');
+  if (!payload) return showError('This result is no longer available (cleared after an extension reload or browser restart). Click the extension icon again to convert.');
   if (payload.error) return showError(payload.error);
   render(payload);
 })();
 
 function showError(msg) {
   const box = document.getElementById('error-box');
-  document.getElementById('page-title').textContent = '暂时无法显示转换结果';
+  document.getElementById('page-title').textContent = 'Unable to show the conversion result';
   document.getElementById('actions').classList.add('hidden');
   document.getElementById('report').classList.add('hidden');
   box.textContent = msg;
@@ -29,15 +29,15 @@ function showError(msg) {
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function render({ md, report, meta }) {
-  document.getElementById('page-title').textContent = meta.title || '(无标题)';
+  document.getElementById('page-title').textContent = meta.title || '(untitled)';
   document.getElementById('page-url').textContent = meta.url || '';
   const chip = document.getElementById('scope-chip');
-  chip.textContent = meta.mode === 'full' ? '整页' : '文章正文';
+  chip.textContent = meta.mode === 'full' ? 'Full page' : 'Article';
   if (meta.fallback) {
-    chip.textContent = '未找到明确正文 · 请核对范围';
+    chip.textContent = 'No clear article found · check the scope';
     chip.classList.add('chip-warn');
   }
-  document.title = (meta.title || '转换结果') + ' · Web2MD';
+  document.title = (meta.title || 'Conversion result') + ' · Web2MD';
   document.getElementById('preview').classList.remove('hidden');
 
   const panel = document.getElementById('report');
@@ -49,7 +49,7 @@ function render({ md, report, meta }) {
   const rows = document.getElementById('check-rows');
   for (const check of report.checks) {
     const row = document.createElement('tr');
-    for (const value of [check.label, check.pre, check.post, check.ok ? '一致' : '有差异']) {
+    for (const value of [check.label, check.pre, check.post, check.ok ? 'Match' : 'Differs']) {
       const cell = document.createElement('td');
       cell.textContent = value;
       row.appendChild(cell);
@@ -61,7 +61,7 @@ function render({ md, report, meta }) {
   for (const c of report.checks.filter((x) => !x.ok)) {
     const h = document.createElement('div');
     h.className = 'check-name';
-    h.textContent = c.label + '：转换前 ' + c.pre + ' → 转换后 ' + c.post;
+    h.textContent = c.label + ': before ' + c.pre + ' → after ' + c.post;
     missingBox.appendChild(h);
     const ul = document.createElement('ul');
     for (const m of c.missing) {
@@ -74,7 +74,7 @@ function render({ md, report, meta }) {
   for (const n of report.notes || []) {
     const d = document.createElement('div');
     d.className = 'note';
-    d.textContent = '说明:' + n;
+    d.textContent = 'Note: ' + n;
     missingBox.appendChild(d);
   }
 
@@ -97,12 +97,12 @@ function render({ md, report, meta }) {
       try { copied = document.execCommand('copy'); } catch {}
       ta.remove();
       if (!copied) {
-        copyBtn.textContent = '复制失败，请下载 .md';
+        copyBtn.textContent = 'Copy failed — download the .md instead';
         return;
       }
     }
-    copyBtn.textContent = '已复制 ✓';
-    setTimeout(() => { copyBtn.textContent = '复制 Markdown'; }, 2000);
+    copyBtn.textContent = 'Copied ✓';
+    setTimeout(() => { copyBtn.textContent = 'Copy Markdown'; }, 2000);
   });
 
   document.getElementById('download-btn').addEventListener('click', () => {
@@ -129,12 +129,13 @@ function render({ md, report, meta }) {
   });
 }
 
-// ---- 迷你 markdown → HTML 渲染器:只覆盖 serialize.js 会产出的构造 ----
+// ---- Mini Markdown → HTML renderer: covers only the constructs serialize.js can emit ----
 
 const IMG = /!\[((?:[^\]\\]|\\.)*)\]\(((?:[^()]|\([^()]*\))*)\)/g;
 const LINK = /\[([^\]]+)\]\(((?:[^()]|\([^()]*\))*)\)/g;
 
-// raw 已经过 esc() 转义(&/</>),但属性值还需转义引号,否则可从属性中逃逸注入标签。
+// raw has already been through esc() (&/</>), but attribute values also need quotes escaped —
+// otherwise a value can break out of the attribute and inject markup.
 const attrSafe = (s) => s.replace(/"/g, '&quot;');
 
 function inlineHtml(raw) {
@@ -151,7 +152,8 @@ function inlineHtml(raw) {
   return s;
 }
 
-// SVG 栅栏注入前剥离 script 与事件属性(页面内容不可信;CSP 之外的双保险)。
+// Strip <script> and event-handler attributes before injecting fenced SVG (page content is
+// untrusted; this is a belt-and-suspenders check on top of CSP).
 const svgSafe = (s) =>
   s.replace(/<\s*script[\s\S]*?<\s*\/\s*script\s*>/gi, '')
    .replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
@@ -246,7 +248,7 @@ function mdToHtml(md) {
   return h.join('\n');
 }
 
-// 表格行按未转义管道拆分(与 core 一致的迷你版,避免为它加载核心文件)。
+// Split a table row on unescaped pipes (mini version matching core, to avoid loading the core file for this).
 function splitRow(line) {
   const parts = line.replace(/^\||\|$/, '').split('|');
   const out = [];

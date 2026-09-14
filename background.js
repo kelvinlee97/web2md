@@ -1,14 +1,15 @@
-// Service worker:触发 → 按需注入 → storage.session 交接 → 打开 UI 页。
-// SW 只在一个唤醒周期内做这几件事,payload 存浏览器内存而非 SW 进程,
-// 30 秒生命周期被结构性消除。
+// Service worker: trigger → inject on demand → hand off via storage.session → open the UI page.
+// The SW only does these things within a single wake cycle; the payload lives in browser
+// storage, not SW process memory, so the 30-second SW lifetime is structurally irrelevant.
 
 const MENU = { 'w2m-article': 'article', 'w2m-full': 'full' };
 
-// 菜单项跨 SW 休眠持久存在,只在 onInstalled 注册(先 removeAll 保证开发期重载确定)。
+// Menu items persist across SW sleep cycles, so they're only registered in onInstalled
+// (removeAll first, to keep dev reloads idempotent).
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll(() => {
-    chrome.contextMenus.create({ id: 'w2m-article', title: 'Web2MD:转换文章为 Markdown', contexts: ['page'] });
-    chrome.contextMenus.create({ id: 'w2m-full', title: 'Web2MD:转换整页为 Markdown', contexts: ['page'] });
+    chrome.contextMenus.create({ id: 'w2m-article', title: 'Web2MD: Convert article to Markdown', contexts: ['page'] });
+    chrome.contextMenus.create({ id: 'w2m-full', title: 'Web2MD: Convert full page to Markdown', contexts: ['page'] });
   });
 });
 
@@ -16,7 +17,7 @@ async function save(tabId, payload) {
   try {
     await chrome.storage.session.set({ ['t' + tabId]: payload });
   } catch {
-    await chrome.storage.session.set({ ['t' + tabId]: { error: '转换结果过大(超过存储上限),无法保存。' } });
+    await chrome.storage.session.set({ ['t' + tabId]: { error: 'The conversion result is too large (exceeds storage limits) and could not be saved.' } });
   }
 }
 
@@ -26,7 +27,8 @@ function openUi(tabId) {
 
 async function run(tab, mode) {
   try {
-    // 模式只能通过 func 传参,与 files 不能同调用,故两次 executeScript。
+    // Mode can only be passed via `func`, which can't be combined with `files` in one call,
+    // hence two executeScript calls.
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: (m) => { globalThis.__WEB2MD_MODE = m; },
@@ -37,7 +39,7 @@ async function run(tab, mode) {
       files: ['core/extract.js', 'core/serialize.js', 'core/article.js', 'core/integrity.js', 'content.js'],
     });
   } catch {
-    await save(tab.id, { error: '此页面无法转换(浏览器内置页面,或 file:// 页面未授权访问)。' });
+    await save(tab.id, { error: 'This page cannot be converted (a built-in browser page, or a file:// page without access granted).' });
     openUi(tab.id);
   }
 }

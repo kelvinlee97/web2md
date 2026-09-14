@@ -1,5 +1,7 @@
-// 按需注入页面隔离世界的薄入口:读模式 → 跑核心管线 → 回传结果。
-// 注入即触发,重复点击幂等重跑。只此文件接触 chrome API。
+// Thin entry point injected into the page's isolated world on demand: read the mode →
+// run the core pipeline → send the result back.
+// Injection itself is the trigger, and repeated clicks just idempotently rerun it.
+// This is the only file besides background.js that touches any chrome.* API.
 
 (() => {
   const mode = globalThis.__WEB2MD_MODE === 'full' ? 'full' : 'article';

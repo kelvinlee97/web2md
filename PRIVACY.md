@@ -1,11 +1,12 @@
 # Privacy Policy
 
-Web2MD 不收集、存储或传输任何个人数据。
+Web2MD does not collect, store, or transmit any personal data.
 
-- 扩展在本地浏览器内完成全部转换,页面内容只写入浏览器会话内存
-  (chrome.storage.session),浏览器关闭即清空。
-- 无账号、无遥测、无分析、无广告、无远程服务器;扩展不加载任何远程代码。
-- 权限用途:activeTab/scripting 用于在你点击图标或右键菜单时转换当前页面;
-  storage 用于把结果暂存到结果页;contextMenus 用于右键菜单入口。
+- All conversion happens locally in your browser. Page content is only written to browser session memory
+  (`chrome.storage.session`), which is cleared when the browser closes.
+- No accounts, no telemetry, no analytics, no ads, no remote servers — the extension never loads any remote code.
+- Permissions: `activeTab`/`scripting` are used to convert the current page when you click the icon or use the
+  right-click menu; `storage` is used to hand the result off to the result page; `contextMenus` provides the
+  right-click menu entries.
 
-如有疑问,请通过 GitHub issue 联系:https://github.com/kelvinlee97/web2md/issues
+Questions? Open a GitHub issue: https://github.com/kelvinlee97/web2md/issues

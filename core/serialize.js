@@ -1,11 +1,13 @@
-// DOM → Markdown。单遍同步遍历:同时产出 markdown 和完整性报告所需的前置统计,
-// 两者共用 extract.js 的谓词,报告不可能与输出矛盾。
-// 本文件不接触任何 chrome API。
+// DOM → Markdown. A single synchronous walk produces both the markdown and the pre-stats
+// needed for the integrity report; both share extract.js's predicates, so the report can
+// never contradict the output.
+// This file touches no chrome APIs.
 
 function escUrl(u) { return /[()]/.test(u) ? '<' + u + '>' : u; }
 function escAlt(s) { return s.replace(/\]/g, '\\]'); }
 
-// 段落/散文本以这些标记开头时,加反斜杠转义,避免被解析器误判为列表/标题/引用/表格。
+// Escape with a backslash when a paragraph/loose text line starts with these markers, so the
+// parser doesn't mistake it for a list/heading/quote/table.
 const LEAD_ESCAPE = /^(\s*)([-*+>#|]|\d+\.)\s/;
 const escapeLead = (s) => s.replace(LEAD_ESCAPE, '$1\\$2');
 
@@ -18,8 +20,8 @@ function domToMarkdown(root, mode) {
   let svgCount = 0;
   const addText = (s) => { if (s) pre.text += ' ' + s; };
 
-  // 行内内容 → 行内 markdown。相邻两个元素子节点之间补空格,
-  // 否则 <span>a</span><span>b</span> 会粘成 "ab"(元信息列表常见)。
+  // Inline content → inline markdown. Insert a space between two adjacent element child
+  // nodes, or <span>a</span><span>b</span> would glue into "ab" (common in metadata lists).
   function inline(el) {
     let out = '';
     let prevWasEl = false;
@@ -37,8 +39,9 @@ function domToMarkdown(root, mode) {
     return out;
   }
 
-  // 单个行内元素的 markdown。liText 直接处理 li 的子元素时同样走这里,
-  // 否则 A/IMG 等自身的语义会被跳过(只递归出纯文本)。
+  // Markdown for a single inline element. liText also routes through here when handling a
+  // li's own children directly — otherwise A/IMG's own semantics would be skipped
+  // (recursion would only yield plain text).
   function inlineEl(node) {
     const tag = node.tagName;
     if (tag === 'A') {
@@ -72,7 +75,7 @@ function domToMarkdown(root, mode) {
     return inline(node);
   }
 
-  // li 的文本部分(排除嵌套列表,嵌套列表在 listToMd 中按缩进追加)。
+  // The text portion of an li (excluding nested lists — those are appended with indentation in listToMd).
   function liText(li) {
     let out = '';
     let prevWasEl = false;
@@ -118,7 +121,7 @@ function domToMarkdown(root, mode) {
     if (!rows.length) return '';
     const width = (r) => Array.from(r.cells).reduce((w, c) => w + (c.colSpan || 1), 0);
     const ncols = Math.max(...rows.map(width));
-    const pending = new Map(); // col → 剩余被 rowspan 占用的行数
+    const pending = new Map(); // col → remaining rows still occupied by a rowspan
     const all = [];
     for (const r of rows) {
       const parts = new Array(ncols).fill('');
@@ -161,9 +164,9 @@ function domToMarkdown(root, mode) {
       if (node.nodeType !== Node.ELEMENT_NODE) continue;
       const e = node;
       if (isSkipped(e, mode)) {
-        if (e.tagName === 'IFRAME') note('页面包含 iframe,未转换');
+        if (e.tagName === 'IFRAME') note('Page contains an iframe, not converted');
         if (e.tagName === 'VIDEO' || e.tagName === 'AUDIO' || e.tagName === 'CANVAS') {
-          note('页面包含 ' + e.tagName.toLowerCase() + ',未转换');
+          note('Page contains ' + e.tagName.toLowerCase() + ', not converted');
         }
         continue;
       }
@@ -233,13 +236,14 @@ function domToMarkdown(root, mode) {
           if (inner.length) blocks.push(inner.join('\n') + (capText ? '\n*' + capText + '*' : ''));
           break;
         }
-        case 'svg': // 注意:SVG 命名空间元素的 tagName 是小写。
-          // 对齐 claude.com 内置 copy-as-markdown:内联 SVG(图标/图形)不输出原始代码。
+        case 'svg': // Note: SVG namespace elements have a lowercase tagName.
+          // Matches claude.com's built-in copy-as-markdown: inline SVG (icons/graphics)
+          // doesn't get its raw source dumped into the output.
           svgCount++;
           break;
         case 'A': {
-          // 块级链接(如导航/CTA):与行内 A 一致地计入并保留 href,
-          // 而不是退化成纯文本段落。
+          // Block-level links (e.g. nav/CTA): counted and kept with their href just like
+          // inline A, instead of degrading into a plain-text paragraph.
           const text = inline(e).trim();
           const href = e.href || '';
           const plain = normalizeText(stripInline(text));
@@ -275,6 +279,6 @@ function domToMarkdown(root, mode) {
 
   const blocks = [];
   walkBlock(root, blocks);
-  if (svgCount) note('页面包含 ' + svgCount + ' 个内联 SVG(图标/图形),已省略原始代码');
+  if (svgCount) note('Page contains ' + svgCount + ' inline SVG(s) (icons/graphics), source omitted');
   return { md: blocks.join('\n\n') + '\n', pre, notes };
 }

@@ -1,6 +1,7 @@
-// 文章根节点检测:readability 式启发评分 + 置信度。
-// 置信度低时调用方回退到整页转换并在报告中明确标出,绝不静默切换。
-// 本文件不接触任何 chrome API。
+// Article-root detection: a readability-style heuristic score plus a confidence value.
+// When confidence is low, the caller falls back to full-page mode and says so explicitly
+// in the report — it never silently switches modes.
+// This file touches no chrome APIs.
 
 const POS = /\b(article|main|content|post|story|entry|body|text)\b/i;
 const NEG = /\b(comment|footer|foot|nav|menu|sidebar|aside|widget|share|social|ad|ads|related|promo|recommend|newsletter|subscribe|breadcrumb|pagination|tags)\b/i;
@@ -11,9 +12,9 @@ function detectArticleRoot(doc) {
   let total = 0;
   for (const el of doc.querySelectorAll('p,pre,td,blockquote,li')) {
     const t = (el.textContent || '').trim();
-    if (t.length < 25) continue; // 忽略小碎片
-    let s = Math.min(Math.floor(t.length / 100), 3); // 长度: 0-3
-    s += Math.min((t.match(/[,，.。:：;；]/g) || []).length, 3); // 标点密度: 0-3
+    if (t.length < 25) continue; // ignore small fragments
+    let s = Math.min(Math.floor(t.length / 100), 3); // length: 0-3
+    s += Math.min((t.match(/[,，.。:：;；]/g) || []).length, 3); // punctuation density: 0-3
     if (el.tagName === 'PRE' || el.tagName === 'TD' || el.tagName === 'BLOCKQUOTE') s += 2;
     s += 1;
     texts.push({ el, s });
@@ -30,14 +31,16 @@ function detectArticleRoot(doc) {
   for (const [el, sc] of scores) {
     if (sc > bestScore) { bestScore = sc; best = el; }
   }
-  // <main> 是内容地标:只要它是可信候选(得分不差、有正文),就优先选它,
-  // 对齐 claude.com 内置 copy-as-markdown 的 querySelector('main') 行为。
+  // <main> is a content landmark: prefer it whenever it's a plausible candidate (score not
+  // much worse, has real content), matching claude.com's built-in copy-as-markdown
+  // behavior of querySelector('main').
   const main = doc.querySelector('main');
   if (main && (scores.get(main) || 0) >= bestScore * 0.5 && main.querySelectorAll('p').length >= 3) {
     best = main;
   }
-  // 置信度 = 落入 best 的文本质量占比,每个文本元素只计一次。
-  // 按祖先链累计会把同一文本按嵌套深度重复计数,深页面上分母无限膨胀。
+  // Confidence = the share of text quality captured by `best`, counting each text element
+  // once. Accumulating by ancestor chain instead would double-count nested text and make
+  // the denominator blow up on deeply nested pages.
   let captured = 0;
   if (best !== doc.body) for (const { el, s } of texts) if (best.contains(el)) captured += s;
   const confidence = total ? captured / total : 0;

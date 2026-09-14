@@ -1,45 +1,45 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Web2MD · 转换结果</title>
+<title>Web2MD · Result</title>
 <link rel="stylesheet" href="ui.css">
 </head>
 <body>
 <header>
-  <p class="brand">Web2MD <span>把网页，留下来。</span></p>
+  <p class="brand">Web2MD <span>Save the web, as Markdown.</span></p>
   <div class="head-row">
-    <h1 id="page-title">正在读取转换结果…</h1>
+    <h1 id="page-title">Loading conversion result…</h1>
     <span id="scope-chip" class="chip"></span>
   </div>
   <div id="page-url"></div>
   <div id="actions">
-    <button id="copy-btn" disabled aria-live="polite">复制 Markdown</button>
-    <button id="download-btn" disabled>下载 .md</button>
+    <button id="copy-btn" disabled aria-live="polite">Copy Markdown</button>
+    <button id="download-btn" disabled>Download .md</button>
   </div>
 </header>
 <main>
-<section id="report" class="report hidden" aria-label="内容检查">
+<section id="report" class="report hidden" aria-label="Content check">
   <div id="summary" class="summary" role="status"></div>
-  <p class="note">检查已提取内容的转换差异，不代表原网页的所有内容都已收录。</p>
+  <p class="note">This checks the extracted content for conversion differences — it does not mean the entire original page was captured.</p>
   <div id="missing"></div>
   <details id="report-details">
-    <summary>查看检查详情</summary>
+    <summary>View check details</summary>
     <table class="checks">
-      <caption>转换前后的内容对比</caption>
-      <thead><tr><th scope="col">检查项</th><th scope="col">转换前</th><th scope="col">转换后</th><th scope="col">结果</th></tr></thead>
+      <caption>Before/after comparison</caption>
+      <thead><tr><th scope="col">Check</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">Result</th></tr></thead>
       <tbody id="check-rows"></tbody>
     </table>
   </details>
 </section>
-<section id="preview" class="hidden" aria-label="转换内容">
-  <div class="tabs" role="group" aria-label="预览方式">
-    <button id="tab-rendered" class="tab" aria-pressed="true" aria-controls="rendered">阅读预览</button>
-    <button id="tab-raw" class="tab" aria-pressed="false" aria-controls="raw">Markdown 源码</button>
+<section id="preview" class="hidden" aria-label="Converted content">
+  <div class="tabs" role="group" aria-label="Preview mode">
+    <button id="tab-rendered" class="tab" aria-pressed="true" aria-controls="rendered">Reading preview</button>
+    <button id="tab-raw" class="tab" aria-pressed="false" aria-controls="raw">Markdown source</button>
   </div>
-  <div id="rendered" class="content" tabindex="0" aria-label="阅读预览"></div>
-  <pre id="raw" class="content hidden" tabindex="0" aria-label="Markdown 源码"></pre>
+  <div id="rendered" class="content" tabindex="0" aria-label="Reading preview"></div>
+  <pre id="raw" class="content hidden" tabindex="0" aria-label="Markdown source"></pre>
 </section>
 <div id="error-box" class="error-box hidden" role="alert"></div>
 </main>
