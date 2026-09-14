@@ -16,7 +16,7 @@ One click turns a page's article into Markdown, ready for your notes or reading 
 2. **Preview the result, check the content report.** Any differences are called out directly; expand for the full counts.
 3. **Copy the Markdown, or download the `.md` file.** Save it to your notes or wherever you keep things.
 
-Use **Article mode** (the default) when you just want the article. Want the nav, footer, and everything else too? Right-click the page and choose **Convert full page to Markdown**.
+Use **Article mode** (the default) when you just want the article. Need the nav, footer, and everything else too? Right-click the page and choose **Convert full page to Markdown**.
 
 ## Installing in Chrome
 
@@ -29,7 +29,7 @@ For now this installs as an unpacked extension — no build step required.
 
 ## What does the content check actually check?
 
-It compares the content that was extracted against the generated Markdown — headings, paragraphs, list items, links, images, captions, code blocks, table counts, and normalized text.
+It compares what was extracted from the page against the generated Markdown — headings, paragraphs, list items, links, images, captions, code blocks, table counts, and normalized text.
 
 - **No differences found:** shows a short summary by default; expand to see the counts.
 - **Differences found:** the affected checks are shown directly, with specifics you can trace, and the details expand automatically.
