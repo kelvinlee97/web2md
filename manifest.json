@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Web2MD",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Convert the current page to Markdown, and honestly report whether the conversion is complete.",
   "permissions": ["activeTab", "scripting", "storage", "contextMenus"],
   "background": { "service_worker": "background.js" },
