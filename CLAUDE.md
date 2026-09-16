@@ -15,6 +15,8 @@ There is no build/lint tooling. To run the test suite:
 
 To load the extension for manual testing: `chrome://extensions` → enable Developer Mode → "Load unpacked" → select the repo root.
 
+CI (`.github/workflows/ci.yml`, job `test`) runs the same suite headlessly on every PR and push to `main`; it's the status check to require in branch protection.
+
 ## Architecture
 
 The codebase is split so the **core conversion logic has zero Chrome API dependencies** and can be reused outside the extension (e.g. a Safari Web Extension) or run standalone in `tests/run.html`. Only `background.js`, `content.js`, and `ui/ui.js` touch `chrome.*` APIs.
