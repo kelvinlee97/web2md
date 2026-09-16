@@ -45,6 +45,7 @@ A passing check doesn't mean the entire original page was captured — article d
 - Content inside iframes, canvas, closed shadow DOM, anything not yet loaded or not currently accessible, and inline SVG source code are not converted.
 - The reading preview supports common Markdown structures; for anything more complex, check the **Markdown source** view too.
 - Old results may become unreadable after the extension reloads or the browser restarts — copy or download promptly if you need to keep them.
+- A paragraph whose text is just a lone `|` character can make the content check misreport a false "Tables" or "Paragraphs" difference — the re-parser reads a standalone pipe as a table row. Nothing is actually lost in this case; treat it as a known false positive.
 
 ## Development and testing
 

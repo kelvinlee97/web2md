@@ -41,7 +41,8 @@ Productivity
 - Single purpose: convert the current page to Markdown for the user to copy/download
 - Data handling: no user data collected; permissions are used only to convert the
   current page on a user gesture
-- Privacy policy URL: https://github.com/kelvinlee97/web2md/blob/main/PRIVACY.md
+- Privacy policy URL: https://kelvinlee97.github.io/web2md/privacy.html
+  (falls back to https://github.com/kelvinlee97/web2md/blob/main/PRIVACY.md if Pages isn't enabled yet)
 
 ---
 
